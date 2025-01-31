@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-export default function Undo({handleCloseUndo, undoItem}) {
-  const [timeLeft, setTimeLeft] = useState(5);
-  const [percentage, setPercentage] = useState(100);
+type Props = {
+  handleCloseUndo: () => void,
+  undoItem: () => void,
+}
+
+export default function Undo({handleCloseUndo, undoItem}: Props) {
+  const [timeLeft, setTimeLeft] = useState<number>(5);
+  const [percentage, setPercentage] = useState<number>(100);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -24,7 +29,7 @@ export default function Undo({handleCloseUndo, undoItem}) {
       <div className="circle">
         <CircularProgressbar
           value={percentage}
-          text={timeLeft}
+          text={String(timeLeft)}
           styles={buildStyles({
             textColor: "#fff",
             textSize: "50px",

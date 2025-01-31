@@ -1,5 +1,16 @@
 import darkThemeIcon from "../assets/dark_theme_icon.svg";
 import lightThemeIcon from "../assets/light_theme_icon.svg";
+import { Filter, Theme } from "../types";
+
+
+type Props = {
+  filter: Filter,
+  handleFilterChange: (e: React.SyntheticEvent) => void,
+  search: string,
+  handleSearchChange: (e: React.SyntheticEvent) => void,
+  handleThemeChange: () => void,
+  theme: Theme
+}
 
 export default function Header({
   filter,
@@ -8,7 +19,7 @@ export default function Header({
   handleSearchChange,
   handleThemeChange,
   theme,
-}) {
+}: Props) {
   return (
     <div className="container">
       <div className="heading__container">
@@ -42,14 +53,14 @@ export default function Header({
         </div>
 
         <select className="sort" value={filter} onChange={handleFilterChange}>
-          <option value="all">ALL</option>
-          <option value="complete">Complete</option>
-          <option value="incomplete">Incomplete</option>
+          <option value={Filter.ALL}>ALL</option>
+          <option value={Filter.COMPLETE}>Complete</option>
+          <option value={Filter.INCOMPLETE}>Incomplete</option>
         </select>
 
         <button className="btn btn__theme" onClick={handleThemeChange}>
           <img
-            src={theme === "light" ? darkThemeIcon : lightThemeIcon}
+            src={theme === Theme.LIGHT ? darkThemeIcon : lightThemeIcon}
             alt="theme icon"
           />
         </button>

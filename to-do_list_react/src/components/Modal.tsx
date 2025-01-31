@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import Button from "./Button";
+import { Todo } from "../types";
+
+type Props = {
+  setList: React.Dispatch<React.SetStateAction<Todo[]>>,
+  editId: number | null,
+  handleEdit: (newText: string) => void,
+  setEditId: React.Dispatch<React.SetStateAction<number | null>>,
+  list: Todo[]
+}
 
 export default function Modal({
   setList,
@@ -7,14 +16,16 @@ export default function Modal({
   handleEdit,
   setEditId,
   list,
-}) {
-  const [open, setOpen] = useState(false);
-  const [inputText, setInputText] = useState("");
+}: Props) {
+  const [open, setOpen] = useState<boolean>(false);
+  const [inputText, setInputText] = useState<string>("");
   useEffect(() => {
     if (editId) {
       handleOpen();
       const editItem = list.find((item) => item.id == editId);
-      setInputText(editItem.text);
+      if (editItem) {
+        setInputText(editItem.text);
+      }
     }
   }, [editId]);
 

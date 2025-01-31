@@ -5,17 +5,18 @@ import Empty from "./components/Empty";
 import Modal from "./components/Modal";
 import List from "./components/List";
 import { useEffect, useState } from "react";
-import { getStorageList } from "./utils";
+import { getStorageList } from "./utils.ts";
 import Undo from "./components/Undo";
+import { Filter, Theme, Todo } from "./types.ts";
 
 function App() {
-  const [list, setList] = useState(getStorageList());
-  const [editId, setEditId] = useState(null);
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
-  const [theme, setTheme] = useState("light");
-  const [undoVisible, setUndoVisible] = useState(false);
-  const [deleteItem, setDeleteItem] = useState(null);
+  const [list, setList] = useState<Todo[]>(getStorageList());
+  const [editId, setEditId] = useState<number | null>(null);
+  const [filter, setFilter] = useState<Filter>(Filter.ALL);
+  const [search, setSearch] = useState<string>("");
+  const [theme, setTheme] = useState<Theme>(Theme.LIGHT);
+  const [undoVisible, setUndoVisible] = useState<boolean>(false);
+  const [deleteItem, setDeleteItem] = useState<Todo | null>(null);
 
   useEffect(() => {
     localStorage.setItem("list", JSON.stringify(list));
@@ -23,21 +24,23 @@ function App() {
 
   let filteredList;
 
-  function handleSearchChange(e) {
-    setSearch(e.target.value);
+  function handleSearchChange(e: React.SyntheticEvent) {
+    const input = e.target as HTMLInputElement;
+    setSearch(input.value);
   }
 
-  function handleFilterChange(e) {
-    setFilter(e.target.value);
+  function handleFilterChange(e: React.SyntheticEvent) {
+    const select = e.target as HTMLSelectElement;
+    setFilter(select.value as Filter);
   }
 
   function handleThemeChange() {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setTheme((prev) => (prev === Theme.LIGHT ? Theme.DARK : Theme.LIGHT));
   }
 
-  if (filter == "complete") {
+  if (filter === Filter.COMPLETE) {
     filteredList = list.filter((item) => item.complete);
-  } else if (filter == "incomplete") {
+  } else if (filter === Filter.INCOMPLETE) {
     filteredList = list.filter((item) => !item.complete);
   } else {
     filteredList = list;
@@ -47,16 +50,19 @@ function App() {
     item.text.toLowerCase().includes(search.toLowerCase())
   );
 
-  function handleDelete(id) {
-    setDeleteItem(list.find((item) => item.id === id));
+  function handleDelete(id: number) {
+    const item = list.find((item) => item.id === id)
+    if (item) {
+    setDeleteItem(item);
     setUndoVisible(true);
     setList((prev) => prev.filter((item) => item.id != id));
+    }
   }
 
-  function handleComplete(id) {
+  function handleComplete(id: number) {
     setList((prev) =>
       prev.map((item) => {
-        if (item.id == id) {
+        if (item.id === id) {
           item.complete = !item.complete;
         }
         return item;
@@ -64,10 +70,10 @@ function App() {
     );
   }
 
-  function handleEdit(newText) {
+  function handleEdit(newText: string) {
     setList((prev) =>
       prev.map((item) => {
-        if (item.id == editId) {
+        if (item.id === editId) {
           item.text = newText;
         }
         return item;
@@ -81,8 +87,10 @@ function App() {
   }
 
   function undoItem() {
-    setList((prev) => [...prev, deleteItem]);
-    handleCloseUndo();
+    if (deleteItem) {
+      setList((prev) => [...prev, deleteItem]);
+      handleCloseUndo();
+    }
   }
 
   return (

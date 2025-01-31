@@ -1,10 +1,18 @@
+import { Todo } from "../types";
+
+type Props = {
+  list: Todo[],
+  handleDelete: (id: number) => void,
+  handleComplete: (id: number) => void,
+  setEditId: (id: number) => void
+}
 
 export default function List({
   list,
   handleDelete,
   handleComplete,
   setEditId,
-}) {
+}: Props) {
   return (
     <div className="container">
       <div className="list__container">
