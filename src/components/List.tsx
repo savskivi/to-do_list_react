@@ -1,27 +1,39 @@
-import { Todo } from "../types";
-
-type Props = {
-  list: Todo[],
-  handleDelete: (id: number) => void,
-  handleComplete: (id: number) => void,
-  setEditId: (id: number) => void
-}
-
-export default function List({
-  list,
-  handleDelete,
+import {
   handleComplete,
+  handleDelete,
   setEditId,
-}: Props) {
+} from "../redux/slices/todoReducer";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { Filter } from "../types";
+
+export default function List() {
+  const dispatch = useAppDispatch();
+  const { list } = useAppSelector((state) => state.todo);
+  const { filter, search } = useAppSelector((state) => state.filter);
+
+  let filteredList;
+
+  if (filter === Filter.COMPLETE) {
+    filteredList = list.filter((item) => item.complete);
+  } else if (filter === Filter.INCOMPLETE) {
+    filteredList = list.filter((item) => !item.complete);
+  } else {
+    filteredList = list;
+  }
+
+  filteredList = filteredList.filter((item) =>
+    item.text.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="container">
       <div className="list__container">
         <ul className="list__wrap">
-          {list.map((item) => (
+          {filteredList.map((item) => (
             <li key={item.id} className="list__item">
               <div className="item__wrap">
                 <input
-                  onChange={() => handleComplete(item.id)}
+                  onChange={() => dispatch(handleComplete(item.id))}
                   className="checkbox"
                   checked={item.complete}
                   type="checkbox"
@@ -39,7 +51,7 @@ export default function List({
 
               <div className="btn__container">
                 <button
-                  onClick={() => setEditId(item.id)}
+                  onClick={() => dispatch(setEditId(item.id))}
                   className="todo__edit"
                 >
                   <svg
@@ -60,7 +72,7 @@ export default function List({
                 </button>
                 <button
                   className="todo__delete"
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => dispatch(handleDelete(item.id))}
                 >
                   <svg
                     className="delete__icon"

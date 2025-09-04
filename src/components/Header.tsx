@@ -1,25 +1,26 @@
 import darkThemeIcon from "../assets/dark_theme_icon.svg";
 import lightThemeIcon from "../assets/light_theme_icon.svg";
+import { setFilter, setSearch } from "../redux/slices/filterReducer";
+import { handleThemeChange } from "../redux/slices/themeReducer";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import { Filter, Theme } from "../types";
 
+export default function Header() {
 
-type Props = {
-  filter: Filter,
-  handleFilterChange: (e: React.SyntheticEvent) => void,
-  search: string,
-  handleSearchChange: (e: React.SyntheticEvent) => void,
-  handleThemeChange: () => void,
-  theme: Theme
-}
+const {filter, search} = useAppSelector((state) => state.filter)
+const dispatch = useAppDispatch()
+const {theme} = useAppSelector((state) => state.theme)
 
-export default function Header({
-  filter,
-  handleFilterChange,
-  search,
-  handleSearchChange,
-  handleThemeChange,
-  theme,
-}: Props) {
+  function handleSearchChange(e: React.SyntheticEvent) {
+    const input = e.target as HTMLInputElement;
+    dispatch(setSearch(input.value));
+  }
+
+  function handleFilterChange(e: React.SyntheticEvent) {
+    const select = e.target as HTMLSelectElement;
+    dispatch(setFilter(select.value as Filter));
+  }
+
   return (
     <div className="container">
       <div className="heading__container">
@@ -58,7 +59,7 @@ export default function Header({
           <option value={Filter.INCOMPLETE}>Incomplete</option>
         </select>
 
-        <button className="btn btn__theme" onClick={handleThemeChange}>
+        <button className="btn btn__theme" onClick={() => dispatch(handleThemeChange())}>
           <img
             src={theme === Theme.LIGHT ? darkThemeIcon : lightThemeIcon}
             alt="theme icon"

@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useAppDispatch } from "../redux/store";
+import { handleCloseUndo, undoItem } from "../redux/slices/todoReducer";
 
-type Props = {
-  handleCloseUndo: () => void,
-  undoItem: () => void,
-}
-
-export default function Undo({handleCloseUndo, undoItem}: Props) {
+export default function Undo() {
   const [timeLeft, setTimeLeft] = useState<number>(5);
   const [percentage, setPercentage] = useState<number>(100);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -20,12 +19,12 @@ export default function Undo({handleCloseUndo, undoItem}: Props) {
 
       return () => clearInterval(interval);
     } else if (timeLeft === 0) {
-      setTimeout(handleCloseUndo, 500)
+      setTimeout(() => dispatch(handleCloseUndo()), 500)
     }
   }, [timeLeft]);
 
   return (
-    <button className="undo__btn" onClick={undoItem}>
+    <button className="undo__btn" onClick={() => dispatch(undoItem())}>
       <div className="circle">
         <CircularProgressbar
           value={percentage}

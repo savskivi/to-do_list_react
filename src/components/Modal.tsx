@@ -1,24 +1,14 @@
 import { useEffect, useState } from "react";
 import Button from "./Button";
-import { Todo } from "../types";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { addTodo, handleEdit, setEditId } from "../redux/slices/todoReducer";
 
-type Props = {
-  setList: React.Dispatch<React.SetStateAction<Todo[]>>,
-  editId: number | null,
-  handleEdit: (newText: string) => void,
-  setEditId: React.Dispatch<React.SetStateAction<number | null>>,
-  list: Todo[]
-}
-
-export default function Modal({
-  setList,
-  editId,
-  handleEdit,
-  setEditId,
-  list,
-}: Props) {
+export default function Modal() {
   const [open, setOpen] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
+  const { list, editId } = useAppSelector((state) => state.todo);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (editId) {
       handleOpen();
@@ -35,18 +25,15 @@ export default function Modal({
 
   function handleClose() {
     setOpen(false);
-    setEditId(null);
+    dispatch(setEditId(null));
     setInputText("");
   }
 
   function handleSubmit() {
     if (editId) {
-      handleEdit(inputText);
+      dispatch(handleEdit(inputText));
     } else {
-      setList((prev) => [
-        ...prev,
-        { id: Date.now(), text: inputText, complete: false },
-      ]);
+      dispatch(addTodo(inputText));
     }
     handleClose();
   }
